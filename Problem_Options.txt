@@ -1,0 +1,20 @@
+Selection for the problems which best match each language (in my opinion)
+
+For Haskell:
+- Problem selected - Conversion a Markup Language to HTML
+- Problem selected - Magic Square Generator
+- Problem selected - Inventory management
+
+For Prolog:
+# Problem selected - Seating Arrangement Optimizer 
+# Problem selected - Team Formation Problem
+# Problem selected - Travel Route Planner
+
+For Z3:
+# Problem selected - Crossword Puzzle Filler
+# Problem selected - Travel Route Planner
+# Problem selected - 
+
+
+Selected problem to work on all three languages:
+- Travel Route Planner 
