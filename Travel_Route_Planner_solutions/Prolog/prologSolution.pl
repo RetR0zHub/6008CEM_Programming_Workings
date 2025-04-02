@@ -1,3 +1,5 @@
+% in order to push and merge with GitHub: git push GitHub_Repo main
+
 %% Problem selected - Tavel Route Planner
 
 % Path for testing: swipl Travel_Route_Planner_solutions/Prolog/prologSolution.pl 
