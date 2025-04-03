@@ -89,11 +89,16 @@ travelPath(Start, Target, [Start | Path], TotalDistanceInMiles, Visited):-
   travelPath(Intermediate, Target, Path, SubDistance, [Intermediate | Visited]), 
   TotalDistanceInMiles is DistanceInMiles + SubDistance. % ^ Add Intermediate to visited list
 
-  allPathsFrom(Start, Target, Path, Distance) :-
-    travelPath(Start, Target, Path, Distance, [Start]). % Ensure Start is initilised as Visited, to prevent it from being duplicated in the Path creating looping journeys 
+%  allPathsFrom(Start, Target, Path, Distance) :-
+%    travelPath(Start, Target, Path, Distance, [Start]). % Ensure Start is initilised as Visited, to prevent it from being duplicated in the Path creating looping journeys 
 
 % \+ - negation as failure, succeeds if the goal following it cannot be proven true: 
 % if (Intermediate) or (Target) is in Visited it is a success causing ' \+ member(...) ' to FAIL! Preventing paths that used the already Visited location again to exsist.
 
 % Intermediate \= Start : Ensures that the Intermediate location is not the same as the Start location - prevent loops
+
+% Further code now utalises travelPath() in order to find the path of least DistanceTravelled - shortest route (utalised generative Ai)
+
+allPathsFrom(Start, Target, PathsWithDistances) :-
+    findall([Path, Distance], travelPath(Start, Target, Path, Distance, [Start]), PathsWithDistances).
 
