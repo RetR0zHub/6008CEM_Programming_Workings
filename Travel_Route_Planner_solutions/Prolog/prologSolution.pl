@@ -103,12 +103,16 @@ travelPath(Start, Target, [Start | Path], TotalDistanceInMiles, Visited):-
 % Further code now utalises travelPath() in order to find the path of least DistanceTravelled - shortest route (utalised generative Ai)
 
 allPathsFrom(Start, Target, PathsWithDistances) :-
-    findall([Path, DistanceInMiles], travelPath(Start, Target, Path, DistanceInMiles, [Start]), PathsWithDistances).
+    findall([Path, DistanceInMiles], travelPath(Start, Target, Path, DistanceInMiles, [Start, bath, liverpool, birmingham]), PathsWithDistances).
 % find all is a built-in predicate - findall(Template, Goal, Bag)
 % Template - paths and distance, Goal - predicate that must hold true for the values to be collected, Bag - Results are stored here (PathsWithDistances)
 % Every time a vaild path is found, it takes the form of [Path, DistanceInMiles] and is stored inside PathsWithDistances
 
-% Base Case - triggers when list of PathsWithDistances is empty leaving all paths checked
+% 1st Base Case - triggers when list of PathsWithDistances is empty and no path has been found (ShortestPath = [] , ShortestDistance = 9999999), 
+% and so [none] and 0 (miles) is returned as the shortest path and shortest distance and the program is cut to prevent producing 2 answers with the second base case 
+findShortestRoute([], [], 9999999, [none], 0):- !.
+
+% 2nd Base Case - triggers when list of PathsWithDistances is empty leaving all paths checked, returing the shortest path and distance
 findShortestRoute([], ShortestPath, ShortestDistance, ShortestPath, ShortestDistance).
 
 % Recursive Case - Cuts the head of PathsWithDistances to compare if that is less than (<) the current stored distance (starts off as max 9999999)
