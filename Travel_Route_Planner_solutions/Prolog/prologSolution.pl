@@ -89,16 +89,42 @@ travelPath(Start, Target, [Start | Path], TotalDistanceInMiles, Visited):-
   travelPath(Intermediate, Target, Path, SubDistance, [Intermediate | Visited]), 
   TotalDistanceInMiles is DistanceInMiles + SubDistance. % ^ Add Intermediate to visited list
 
-%  allPathsFrom(Start, Target, Path, Distance) :-
-%    travelPath(Start, Target, Path, Distance, [Start]). % Ensure Start is initilised as Visited, to prevent it from being duplicated in the Path creating looping journeys 
-
 % \+ - negation as failure, succeeds if the goal following it cannot be proven true: 
 % if (Intermediate) or (Target) is in Visited it is a success causing ' \+ member(...) ' to FAIL! Preventing paths that used the already Visited location again to exsist.
 
 % Intermediate \= Start : Ensures that the Intermediate location is not the same as the Start location - prevent loops
 
+
+% allPossiblePathsBetween() used as a check to see the all the possible paths/routes between locations
+  allPossiblePathsBetween(Start, Target, Path, Distance) :-
+    travelPath(Start, Target, Path, Distance, [Start]). % Ensure Start is initilised as Visited, to prevent it from being duplicated in the Path creating looping journeys 
+
+
 % Further code now utalises travelPath() in order to find the path of least DistanceTravelled - shortest route (utalised generative Ai)
 
 allPathsFrom(Start, Target, PathsWithDistances) :-
-    findall([Path, Distance], travelPath(Start, Target, Path, Distance, [Start]), PathsWithDistances).
+    findall([Path, DistanceInMiles], travelPath(Start, Target, Path, DistanceInMiles, [Start]), PathsWithDistances).
+% find all is a built-in predicate - findall(Template, Goal, Bag)
+% Template - paths and distance, Goal - predicate that must hold true for the values to be collected, Bag - Results are stored here (PathsWithDistances)
+% Every time a vaild path is found, it takes the form of [Path, DistanceInMiles] and is stored inside PathsWithDistances
 
+% Base Case - triggers when list of PathsWithDistances is empty leaving all paths checked
+findShortestRoute([], ShortestPath, ShortestDistance, ShortestPath, ShortestDistance).
+
+% Recursive Case - Cuts the head of PathsWithDistances to compare if that is less than (<) the current stored distance (starts off as max 9999999)
+findShortestRoute([[Path, DistanceInMiles] | Rest], CurrentPath, CurrentDistance, ShortestPath, ShortestDistance) :-
+    ( DistanceInMiles < CurrentDistance ->
+        findShortestRoute(Rest, Path, DistanceInMiles, ShortestPath, ShortestDistance)
+    ; 
+        findShortestRoute(Rest, CurrentPath, CurrentDistance, ShortestPath, ShortestDistance)
+    ).
+
+shortestRoute(Start, Target, ShortestPath, ShortestDistance) :-
+    allPathsFrom(Start, Target, PathsWithDistances),
+    findShortestRoute(PathsWithDistances, _, 9999999, ShortestPath, ShortestDistance).
+% ShortestPath and ShortestDistance used as output variables to display the Shortest Route and the total distance travelled
+% _ - place holder for CurrentPath as it will be initilised during search
+% 9999999 - max distance allowing for smaller routes to be searched for
+
+
+    
