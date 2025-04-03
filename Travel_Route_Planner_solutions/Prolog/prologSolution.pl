@@ -64,11 +64,36 @@ distanceBetween(sheffield, manchester, 42). distanceBetween(sheffield, peterboro
 distanceBetween(manchester, liverpool, 33). distanceBetween(manchester, birmingham, 87). distanceBetween(manchester, sheffield, 42).
 
 % Liverpool connected cities and distances
-distanceBetween(liverpool, manchester, 33). distanceBetween(liverpool, swansea, 167). distanceBetween(liverpool, birmingham, 99).
+distanceBetween(liverpool, manchester, 33). distanceBetween(liverpool, birmingham, 99). distanceBetween(liverpool, swansea, 167).
 
 % Swansea connected cities and distances
 distanceBetween(swansea, birmingham, 143). distanceBetween(swansea, bath, 96). distanceBetween(swansea, liverpool, 167).
 
 % Can run a test to see if all the connected locations distances match and the prolog stores these as hardcoded True results
 %  Test code: distanceBetween(Start, Target, DistanceInMiles). - Gives a layout of start locations, thier connected targets and the distance between them in miles (using ';' to continue)
+
+% Calculate the Shortest Travel Route recusivly - looking for all possible paths (utalised Ai here to develop and understand pathfinding logic):
+% Test will be London -> Swansea
+
+% travelPath() is a recursive rule used to find all the possible paths from one location to another without repeating the same location twice
+% Base Case
+travelPath(Start, Target, [Start, Target] , DistanceInMiles, Visited):-
+  distanceBetween(Start, Target, DistanceInMiles),
+  \+ member(Target, Visited).  % Ensure Target has not been visited, to avoid cycles
+ 
+% Recusive Case 
+travelPath(Start, Target, [Start | Path], TotalDistanceInMiles, Visited):-
+  distanceBetween(Start, Intermediate, DistanceInMiles),
+  Intermediate \= Start, 
+  \+ member(Intermediate, Visited),
+  travelPath(Intermediate, Target, Path, SubDistance, [Intermediate | Visited]), 
+  TotalDistanceInMiles is DistanceInMiles + SubDistance. % ^ Add Intermediate to visited list
+
+  allPathsFrom(Start, Target, Path, Distance) :-
+    travelPath(Start, Target, Path, Distance, [Start]). % Ensure Start is initilised as Visited, to prevent it from being duplicated in the Path creating looping journeys 
+
+% \+ - negation as failure, succeeds if the goal following it cannot be proven true: 
+% if (Intermediate) or (Target) is in Visited it is a success causing ' \+ member(...) ' to FAIL! Preventing paths that used the already Visited location again to exsist.
+
+% Intermediate \= Start : Ensures that the Intermediate location is not the same as the Start location - prevent loops
 
