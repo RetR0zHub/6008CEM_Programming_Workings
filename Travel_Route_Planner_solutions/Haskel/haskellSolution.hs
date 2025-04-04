@@ -36,7 +36,7 @@
 --   London -> Birmingham -> Swansea = 119 + 143 = 262
 --   London -> Cambridge -> Peterborough -> Sheffield -> Manchester -> Liverpool -> Swansea = 60 + 43 + 93 + 42 + 33 + 167 = 438
 --   London -> Cambridge -> Leicester -> Sheffield -> Manchester -> Liverpool -> Swansea = 60 + 72 + 70 + 42 + 33 + 167 = 444
---   + extra paths if wanting to go through specific cities (e.graph. Liverpool: London -> Birmingham -> Liverpool -> Swansea etc.)
+--   + extra paths if wanting to go through specific cities (e.g. Liverpool: London -> Birmingham -> Liverpool -> Swansea etc.)
 -- Then the purpose of the algorithm is to find which route would take the shortest distance (time) 
 --   So in this case, the algorithm should suggest [ London -> Bath -> Swansea at 207 Miles]
 
@@ -44,6 +44,7 @@
 -- Depth-first search (DFS) approach 
 
 import Data.List 
+import Data.Ord
 import qualified Data.Map as Map
 type City = String
 type Distance = Int
@@ -78,7 +79,7 @@ graph = Map.fromList
 
 -- Recursive function to find all paths from start to target
 findRoutes :: Graph -> City -> City -> [City] -> Distance -> [Path] -- Utalises function gaurds to separate recursive case and base case 
--- Map.lookup :: Ord k => k -> Map k a -> Maybe a -- Function returns a maybe type
+-- map.lookup :: Ord k => k -> Map k a -> Maybe a - Function returns a maybe type
 findRoutes graph start target visited distanceInMiles
     | start == target = [ (reverse (target:visited), distanceInMiles) ] -- Base case: Recursive start is the target -> reversing the visited list after prepending the target, returning the full path found and total distance travelled
     | otherwise =
@@ -92,6 +93,18 @@ findRoutes graph start target visited distanceInMiles
 -- Test wrapper function - Called to check if the findRoutes function works without having to initialise the empty list and 0 (for distance)
 allRoutes :: Graph -> City -> City -> [Path]
 allRoutes graph from to = findRoutes graph from to [] 0
+
+-- Developing an algorithm to work out the SHORTEST paths between the graph of cities:
+shortestRoute :: Graph -> City -> City -> Maybe Path
+shortestRoute graph start target =
+    let routes = findRoutes graph start target [] 0
+    in if null routes
+       then Nothing  -- No path found
+       else Just (minimumBy (comparing snd) routes)  
+       -- minimumBy imported from Data.List (finds the smallest distance), -- comparing imported from Data.Ord (use to make the second element distance the comparison)
+       -- snd extracts the second element of the tuple routes (distance)
+
+
 
 
 
