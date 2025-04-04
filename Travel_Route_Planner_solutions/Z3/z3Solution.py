@@ -48,6 +48,7 @@ from z3 import *
 
 cities = ["London", "Birmingham", "Bath", "Cambridge", "Peterborough", "Leicester", "Sheffield", "Manchester", "Liverpool", "Swansea"]
 
+# Dictionanary Grouping - acts as an adjacency list with each tuple representing an edge between cities; distance is the value of that edge [ ("x", "y"): value] + Unidirected graph
 distances = { ("London", "Birmingham") : 119 , ("London", "Bath") : 111 , ("London", "Cambridge") : 60 ,
 
               ("Birmingham", "Manchester") : 87 , ("Birmingham", "Swansea") : 143 , ("Birmingham", "Liverpool") : 99 , ("Birmingham", "Leicester") : 45 ,
@@ -66,5 +67,58 @@ distances = { ("London", "Birmingham") : 119 , ("London", "Bath") : 111 , ("Lond
               
               ("Liverpool", "Manchester") : 33 , ("Liverpool", "Swansea") : 167 , ("Liverpool", "Birmingham") : 99 ,
               
-              ("Swansea", "Birmingham") : 143 , ("Swansea", "Bath") : 96 , ("Swansea", "Liverpool") : 167 }
+              ("Swansea", "Birmingham") : 143 , ("Swansea", "Bath") : 96 , ("Swansea", "Liverpool") : 167 } 
 
+
+def allPossibleRoutes(cities, distances, start, target):
+    solve = Solver()
+    totalCityNumber = len(cities)
+    cityIndex = {cities[i]: i for i in range(totalCityNumber)} # Maps each city name to a unique integer
+    if start not in cityIndex or target not in cityIndex:   # If either start or target is not in the cityIndex, there is no path and therefore and empty list is returned 
+        return []  
+    
+    startIndex, targetIndex = cityIndex[start], cityIndex[target]   # coverts both the start and target cities into their corresponding index 
+    maxPathLength = totalCityNumber
+    order = [Int(f'city_{i}') for i in range(totalCityNumber)]    # under order, the creation of Z3 Variables to represent the sequence of city indicies in the path 
+    solve.add(Distinct(order))                              # Add solver rule that all paths must be Distinct (no repeats)
+    for i in range(maxPathLength):
+        solve.add(order[i] >= 0, order[i] < totalCityNumber) # Add Solver rule that ensures each order variable must be a valid city index, between order and the city length - preventing any invaild index being used 
+
+    
+    solve.add(order[0] == startIndex)                    # Add Solver rule that the first city in the path must be the start city
+    solve.add(order[- 1] == targetIndex)   # Add Solver rule that the last city must be in the path but the position won't be forced
+    validPaths = []
+    while solve.check() == sat:                     # while loop running with the solver constantly checking for satisfiable solutions (valid paths) until there are none left
+        model = solve.model()                       
+        routeIndex = [model[order[i]].as_long() for i in range(totalCityNumber)]   # Conversion of city indicies back to city names, applying the Z3 solution with model solve, after converting the Z3 integer Value into a pyhton integer (city index)
+        route = [cities[idx] for idx in routeIndex] 
+        if target in route:
+          targetPosition = route.index(target)
+          route = route[:targetPosition + 1]
+        
+        totalDistance = 0
+        validRoute = True   
+        for i in range(len(route) - 1):
+            if (route[i], route[i+1]) in distances:
+                totalDistance += distances[(route[i], route[i+1])]
+            elif (route[i+1], route[i]) in distances:  # If bidirectional
+                totalDistance += distances[(route[i+1], route[i])]
+            else:
+                validRoute = False  # No direct connection → Invalid path
+                print("Invalid path, skipping:", route)  # Debug print
+                break
+
+        if validRoute:
+            validPaths.append((route, totalDistance))
+
+        solve.add(*[order[i] != model[order[i]] for i in range(len(route))]) # Block the current solution so Z3 finds new ones
+
+    return validPaths
+
+
+start = "London"
+target = "Birmingham"
+paths = allPossibleRoutes(cities, distances, start, target)
+
+for route, distance in paths:
+    print(f"Path: {route}, Distance: {distance}")
