@@ -103,7 +103,7 @@ travelPath(Start, Target, [Start | Path], TotalDistanceInMiles, Visited):-
 % Further code now utalises travelPath() in order to find the path of least DistanceTravelled - shortest route (utalised generative Ai)
 
 allPathsFrom(Start, Target, PathsWithDistances) :-
-    findall([Path, DistanceInMiles], travelPath(Start, Target, Path, DistanceInMiles, [Start, bath, liverpool, birmingham]), PathsWithDistances).
+    findall([Path, DistanceInMiles], travelPath(Start, Target, Path, DistanceInMiles, [Start]), PathsWithDistances).
 % find all is a built-in predicate - findall(Template, Goal, Bag)
 % Template - paths and distance, Goal - predicate that must hold true for the values to be collected, Bag - Results are stored here (PathsWithDistances)
 % Every time a vaild path is found, it takes the form of [Path, DistanceInMiles] and is stored inside PathsWithDistances
