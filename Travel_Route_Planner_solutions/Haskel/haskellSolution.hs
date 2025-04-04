@@ -36,7 +36,62 @@
 --   London -> Birmingham -> Swansea = 119 + 143 = 262
 --   London -> Cambridge -> Peterborough -> Sheffield -> Manchester -> Liverpool -> Swansea = 60 + 43 + 93 + 42 + 33 + 167 = 438
 --   London -> Cambridge -> Leicester -> Sheffield -> Manchester -> Liverpool -> Swansea = 60 + 72 + 70 + 42 + 33 + 167 = 444
---   + extra paths if wanting to go through specific cities (e.g. Liverpool: London -> Birmingham -> Liverpool -> Swansea etc.)
+--   + extra paths if wanting to go through specific cities (e.graph. Liverpool: London -> Birmingham -> Liverpool -> Swansea etc.)
 -- Then the purpose of the algorithm is to find which route would take the shortest distance (time) 
 --   So in this case, the algorithm should suggest [ London -> Bath -> Swansea at 207 Miles]
+
+-- Developing an algorithm to work out all the paths between cities with assitance of generative Ai:
+-- Depth-first search (DFS) approach 
+
+import Data.List 
+import qualified Data.Map as Map
+type City = String
+type Distance = Int
+type Graph = Map.Map City [(City, Distance)]
+type Path = ([City], Distance)
+
+-- using graph and .Map from Data.Map, an adjacency list is formed - a list of tuples contianing key cities and the list of cities they are connected to + the distances between them
+-- .fromList builds a map from an unordered list of key/value pairs 
+graph :: Graph
+graph = Map.fromList
+    [ ("London", [("Bath", 111), ("Cambridge", 60), ("Birmingham", 119) ])
+
+    , ("Birmingham", [("Manchester", 87), ("Swansea", 143), ("Liverpool", 99), ("Leicester", 45)])
+
+    , ("Bath", [("Swansea", 96), ("London", 100)])
+
+    , ("Cambridge", [("Leicester", 72), ("Peterborough", 43), ("London", 60)])
+
+    , ("Peterborough", [("Sheffield", 93), ("Cambridge", 43), ("Leicester", 41)])
+
+    , ("Leicester", [("Peterborough", 41), ("Sheffield", 70), ("Birmingham", 45), ("Cambridge", 72)])
+
+    , ("Sheffield", [("Manchester", 42), ("Peterborough", 93), ("Leicester", 70)])
+
+    , ("Manchester", [("Liverpool", 33), ("Birmingham", 87), ("Sheffield", 42)])
+
+    , ("Liverpool", [("Manchester", 33), ("Swansea", 167), ("Birmingham", 99)])
+
+    , ("Swansea", [("Birmingham", 143), ("Bath", 96), ("Liverpool", 167)])
+
+    ]
+
+-- Recursive function to find all paths from start to target
+findRoutes :: Graph -> City -> City -> [City] -> Distance -> [Path] -- Utalises function gaurds to separate recursive case and base case 
+-- Map.lookup :: Ord k => k -> Map k a -> Maybe a -- Function returns a maybe type
+findRoutes graph start target visited distanceInMiles
+    | start == target = [ (reverse (target:visited), distanceInMiles) ] -- Base case: Recursive start is the target -> reversing the visited list after prepending the target, returning the full path found and total distance travelled
+    | otherwise =
+        case Map.lookup start graph of -- case expression used for pattern matching: different action taken dependant on the pattern of value (nothing OR Just neighbors)
+            Nothing -> []   -- if the start does not exsist or the target is never reached an empty list is returned, representing no path 
+            Just neighbors ->
+                [ path | (nextCity, d) <- neighbors -- iterates (<-) over all neighbouring cities, extracting elements from a list and decomposing each tuple into nextCity and d (representing distance)
+                , nextCity `notElem` visited -- Filters out cities already visited (" next city is not an element of visited ") 
+                , path <- findRoutes graph nextCity target (start:visited) (distanceInMiles + d) ] -- path becomes the recursion of findRoutes on nextCity 
+
+-- Test wrapper function - Called to check if the findRoutes function works without having to initialise the empty list and 0 (for distance)
+allRoutes :: Graph -> City -> City -> [Path]
+allRoutes graph from to = findRoutes graph from to [] 0
+
+
 
