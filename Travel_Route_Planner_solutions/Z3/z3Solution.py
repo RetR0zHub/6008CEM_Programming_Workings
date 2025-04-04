@@ -104,4 +104,15 @@ def shortestPath(graphOfCities, start, target):
         return None, None
 
 #TEST - success! 
-shortestPath(cityGraph, "Bath", "Leicester")
+#shortestPath(cityGraph, "Bath", "Leicester")
+
+print("Welcome To The Route Travel Planner")
+targetCity = input("Where would you like to go?: ")
+startCity = input ("And where would you like to start?: ")
+
+print("\nHow would you like your journey to be optimized. \n\n 1. Shortest Route (Least distance travelled) \n")
+optChoice = input("Please choose a numeber: ")
+if optChoice == "1":
+  shortestPath(cityGraph, startCity, targetCity)
+else:
+  print ("Please Try again")

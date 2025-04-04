@@ -69,6 +69,7 @@ distanceBetween(liverpool, manchester, 33). distanceBetween(liverpool, birmingha
 % Swansea connected cities and distances
 distanceBetween(swansea, birmingham, 143). distanceBetween(swansea, bath, 96). distanceBetween(swansea, liverpool, 167).
 
+
 % Can run a test to see if all the connected locations distances match and the prolog stores these as hardcoded True results
 %  Test code: distanceBetween(Start, Target, DistanceInMiles). - Gives a layout of start locations, thier connected targets and the distance between them in miles (using ';' to continue)
 
@@ -77,16 +78,18 @@ distanceBetween(swansea, birmingham, 143). distanceBetween(swansea, bath, 96). d
 
 % travelPath() is a recursive rule used to find all the possible paths from one location to another without repeating the same location twice
 % Base Case
-travelPath(Start, Target, [Start, Target] , DistanceInMiles, Visited):-
+travelPath(Start, Target, [Start, Target] , DistanceInMiles, Visited, Avoided):-
   distanceBetween(Start, Target, DistanceInMiles),
-  \+ member(Target, Visited).  % Ensure Target has not been visited, to avoid cycles
- 
+  \+ member(Target, Visited),  % Target has not been visited = avoid cycles
+  \+ member(Target, Avoided).  % Target is not in the avoided list
+
 % Recusive Case 
-travelPath(Start, Target, [Start | Path], TotalDistanceInMiles, Visited):-
+travelPath(Start, Target, [Start | Path], TotalDistanceInMiles, Visited, Avoided):-
   distanceBetween(Start, Intermediate, DistanceInMiles),
   Intermediate \= Start, 
   \+ member(Intermediate, Visited),
-  travelPath(Intermediate, Target, Path, SubDistance, [Intermediate | Visited]), 
+  \+ member(Intermediate, Avoided),    % Intermediate is not on the avoided list
+  travelPath(Intermediate, Target, Path, SubDistance, [Intermediate | Visited], Avoided), 
   TotalDistanceInMiles is DistanceInMiles + SubDistance. % ^ Add Intermediate to visited list
 
 % \+ - negation as failure, succeeds if the goal following it cannot be proven true: 
@@ -102,8 +105,8 @@ travelPath(Start, Target, [Start | Path], TotalDistanceInMiles, Visited):-
 
 % Further code now utalises travelPath() in order to find the path of least DistanceTravelled - shortest route (utalised generative Ai)
 
-allPathsFrom(Start, Target, PathsWithDistances) :-
-    findall([Path, DistanceInMiles], travelPath(Start, Target, Path, DistanceInMiles, [Start]), PathsWithDistances).
+allPathsFrom(Start, Target, Avoided, PathsWithDistances) :-
+    findall([Path, DistanceInMiles], travelPath(Start, Target, Path, DistanceInMiles, [Start], Avoided), PathsWithDistances).
 % find all is a built-in predicate - findall(Template, Goal, Bag)
 % Template - paths and distance, Goal - predicate that must hold true for the values to be collected, Bag - Results are stored here (PathsWithDistances)
 % Every time a vaild path is found, it takes the form of [Path, DistanceInMiles] and is stored inside PathsWithDistances
@@ -123,12 +126,14 @@ findShortestRoute([[Path, DistanceInMiles] | Rest], CurrentPath, CurrentDistance
         findShortestRoute(Rest, CurrentPath, CurrentDistance, ShortestPath, ShortestDistance)
     ).
 
-shortestRoute(Start, Target, ShortestPath, ShortestDistance) :-
-    allPathsFrom(Start, Target, PathsWithDistances),
+
+shortestRoute(Start, Target, Avoided, ShortestPath, ShortestDistance) :-
+    allPathsFrom(Start, Target, Avoided, PathsWithDistances),
     findShortestRoute(PathsWithDistances, _, 9999999, ShortestPath, ShortestDistance).
 % ShortestPath and ShortestDistance used as output variables to display the Shortest Route and the total distance travelled
 % _ - place holder for CurrentPath as it will be initilised during search
 % 9999999 - max distance allowing for smaller routes to be searched for
 
-
+% Avoided variable added with a negation as failure. Used to identify locations to avoid on the jouney whilst still attaining the shortest possible route
+% shortestRoute went from \4 to \5 and so if no locations are to avoided, an [ ] must be initilised
     
