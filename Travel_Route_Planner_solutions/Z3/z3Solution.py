@@ -1,11 +1,9 @@
-# Problem selected - Tavel Route Planner
-
 # # Problem selected - Tavel Route Planner
 # in order to push and merge with GitHub: git push GitHub_Repo main
 
 # Problem selected - Tavel Route Planner
 
-# Path for testing: swipl Travel_Route_Planner_solutions/Prolog/prologSolution.pl 
+# Path for testing:  python3 Travel_Route_Planner_solutions/Z3/z3Solution.py
 
 # Based of the approximate road distances between each city
 # Travel Route planner idea: Distance from different paths starting from london (Node 1)

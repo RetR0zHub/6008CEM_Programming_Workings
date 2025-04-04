@@ -3,7 +3,7 @@
 
 -- Problem selected - Tavel Route Planner
 
--- Path for testing: swipl Travel_Route_Planner_solutions/Prolog/prologSolution.pl 
+-- Path for testing: stack ghci | :l  Travel_Route_Planner_solutions/Haskel/haskellSolution.hs
 
 -- Based of the approximate road distances between each city
 -- Travel Route planner idea: Distance from different paths starting from london (Node 1)
