@@ -104,7 +104,17 @@ shortestRoute graph start target =
        -- minimumBy imported from Data.List (finds the smallest distance), -- comparing imported from Data.Ord (use to make the second element distance the comparison)
        -- snd extracts the second element of the tuple routes (distance)
 
-
-
+-- Adding a main function to run in the IO
+main :: IO ()
+main = do
+    putStrLn "Enter starting city: "
+    start <- getLine
+    putStrLn "Enter destination city: "
+    target <- getLine
+    case shortestRoute graph start target of
+        Just (route, distance) -> do
+            putStrLn $ "Shortest path: " ++ intercalate " -> " route
+            putStrLn $ "Total distance: " ++ show distance ++ " miles"
+        Nothing -> putStrLn "No route found."
 
 
