@@ -106,7 +106,7 @@ def shortestPath(graphOfCities, start, target):
 #TEST - success! 
 #shortestPath(cityGraph, "Bath", "Leicester")
 
-print("Welcome To The Route Travel Planner")
+print("Welcome To The Route Travel Planner! (Choose from: London, Birmingham, Bath, Cambridge, Peterborough, Leicester, Sheffield, Manchester, Liverpool and Swansea)")
 targetCity = input("Where would you like to go?: ")
 startCity = input ("And where would you like to start?: ")
 
