@@ -39,3 +39,32 @@
 #   + extra paths if wanting to go through specific cities (e.g. Liverpool: London -> Birmingham -> Liverpool -> Swansea etc.)
 # Then the purpose of the algorithm is to find which route would take the shortest distance (time) 
 #   So in this case, the algorithm should suggest [ London -> Bath -> Swansea at 207 Miles]
+
+# Developing an algorithm to work out the shortest path between cities with assitance of generative Ai:
+
+from z3 import *
+
+# must initialise a list of cities and the distances between them
+
+cities = ["London", "Birmingham", "Bath", "Cambridge", "Peterborough", "Leicester", "Sheffield", "Manchester", "Liverpool", "Swansea"]
+
+distances = { ("London", "Birmingham") : 119 , ("London", "Bath") : 111 , ("London", "Cambridge") : 60 ,
+
+              ("Birmingham", "Manchester") : 87 , ("Birmingham", "Swansea") : 143 , ("Birmingham", "Liverpool") : 99 , ("Birmingham", "Leicester") : 45 ,
+
+              ("Bath", "Swansea") : 96 , ("Bath", "London") : 100 ,
+              
+              ("Cambridge", "Leicester") : 72 , ("Cambridge", "Peterborough") : 43 , ("Cambridge", "London") : 60 , 
+
+              ("Peterborough", "Sheffield") : 93 , ("Peterborough", "Cambridge") : 43 , ("Peterborough", "Leicester") : 41 , 
+              
+              ("Leicester", "Peterborough") : 41 , ("Leicester", "Sheffield") : 70 , ("Leicester", "Birmingham") : 45 , ("Leicester", "Cambridge") : 72 , 
+              
+              ("Sheffield", "Manchester") : 42 , ("Sheffield", "Peterborough") : 93 , ("Sheffield", "Leicester") : 70 , 
+              
+              ("Manchester", "Liverpool") : 33 , ("Manchester", "Birmingham") : 87 , ("Manchester", "Sheffield") : 42 ,
+              
+              ("Liverpool", "Manchester") : 33 , ("Liverpool", "Swansea") : 167 , ("Liverpool", "Birmingham") : 99 ,
+              
+              ("Swansea", "Birmingham") : 143 , ("Swansea", "Bath") : 96 , ("Swansea", "Liverpool") : 167 }
+

@@ -79,7 +79,7 @@ graph = Map.fromList
 
 -- Recursive function to find all paths from start to target
 findRoutes :: Graph -> City -> City -> [City] -> Distance -> [Path] -- Utalises function gaurds to separate recursive case and base case 
--- map.lookup :: Ord k => k -> Map k a -> Maybe a - Function returns a maybe type
+-- Map.lookup :: Ord k => k -> Map k a -> Maybe a - Function returns a maybe type
 findRoutes graph start target visited distanceInMiles
     | start == target = [ (reverse (target:visited), distanceInMiles) ] -- Base case: Recursive start is the target -> reversing the visited list after prepending the target, returning the full path found and total distance travelled
     | otherwise =
