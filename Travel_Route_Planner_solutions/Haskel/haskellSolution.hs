@@ -107,7 +107,7 @@ shortestRoute graph start target =
 -- Adding a main function to run in the IO
 main :: IO ()
 main = do
-    putStrLn "Enter starting city: "
+    putStrLn "Enter starting city: (Choose from: London, Birmingham, Bath, Cambridge, Peterborough, Leicester, Sheffield, Manchester, Liverpool and Swansea)  "
     start <- getLine
     putStrLn "Enter destination city: "
     target <- getLine
